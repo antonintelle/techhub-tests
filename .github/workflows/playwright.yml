@@ -18,26 +18,30 @@ jobs:
     
     - name: Install dependencies
       run: npm ci
-      
-    # ✅ CHARGER LE .env AVANT LES TESTS
-    - name: Load .env file
-      uses: aarcangeli/load-dotenv@v1
-      with:
-        path: '.env'
     
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     
-    # ✅ VARIABLES DISPONIBLES DANS LES TESTS
+    #  TOUS LES SECRETS DISPONIBLES
     - name: Run Playwright tests
       run: npx playwright test
       env:
         URL: ${{ secrets.URL }}
         EMAIL: ${{ secrets.EMAIL }}
         PASSWORD: ${{ secrets.PASSWORD }}
+        FIRST_NAME: ${{ secrets.FIRST_NAME }}
+        LAST_NAME: ${{ secrets.LAST_NAME }}
+        PHONE: ${{ secrets.PHONE }}
+        ADDRESS: ${{ secrets.ADDRESS }}
+        POSTAL_CODE: ${{ secrets.POSTAL_CODE }}
+        CITY: ${{ secrets.CITY }}
+        COUNTRY: ${{ secrets.COUNTRY }}
+        TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+        TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
     
+    #  FIX RAPPORT : Chemin correct
     - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
+      if: always()
       with:
         name: playwright-report
         path: playwright-report/
