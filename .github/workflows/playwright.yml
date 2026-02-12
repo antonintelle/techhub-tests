@@ -4,21 +4,38 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+    
     - name: Install dependencies
       run: npm ci
+      
+    # ✅ CHARGER LE .env AVANT LES TESTS
+    - name: Load .env file
+      uses: aarcangeli/load-dotenv@v1
+      with:
+        path: '.env'
+    
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    
+    # ✅ VARIABLES DISPONIBLES DANS LES TESTS
     - name: Run Playwright tests
       run: npx playwright test
+      env:
+        URL: ${{ secrets.URL }}
+        EMAIL: ${{ secrets.EMAIL }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+    
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
